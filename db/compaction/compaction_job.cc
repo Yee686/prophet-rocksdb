@@ -255,7 +255,7 @@ void CompactionJob::ReportStartedCompaction(Compaction* compaction) {
       StopWatch sw(db_options_.clock, stats_, SUBCOMPACTION_SETUP_TIME);
       GenSubcompactionBoundaries();
     }
-    printf("boundaries.size() %ld\n", boundaries_.size());
+    // printf("boundaries.size() %ld\n", boundaries_.size());
     if (boundaries_.size() > 1) {
       for (size_t i = 0; i <= boundaries_.size(); i++) {
         compact_->sub_compact_states.emplace_back(
@@ -595,7 +595,7 @@ Status CompactionJob::Run() {
   assert(num_threads > 0);
   const uint64_t start_micros = db_options_.clock->NowMicros();
 
-  printf("CompactionJob::Run clock=%d level=%d\n" , get_clock(), compact_->compaction->start_level());
+  // printf("CompactionJob::Run clock=%d level=%d\n" , get_clock(), compact_->compaction->start_level());
 
 
   /*
@@ -2026,12 +2026,12 @@ void CompactionJob::LogCompaction() {
       }
       stream.EndArray();
     }
-    puts("");
-    stream << "score" << compaction->score() << "input_data_size"
-           << compaction->CalculateTotalInputSize() << "oldest_snapshot_seqno"
-           << (existing_snapshots_.empty()
-                   ? int64_t{-1}  // Use -1 for "none"
-                   : static_cast<int64_t>(existing_snapshots_[0]));
+    // puts("");
+    // stream << "score" << compaction->score() << "input_data_size"
+    //        << compaction->CalculateTotalInputSize() << "oldest_snapshot_seqno"
+    //        << (existing_snapshots_.empty()
+    //                ? int64_t{-1}  // Use -1 for "none"
+    //                : static_cast<int64_t>(existing_snapshots_[0]));
   }
 }
 

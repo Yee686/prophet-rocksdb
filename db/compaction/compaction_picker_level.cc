@@ -683,11 +683,11 @@ bool LevelCompactionBuilder::TryExtendNonL0TrivialMove(int start_index) {
       start_level_inputs_.files.push_back(next_file);
     }
     
-    printf("TryExtendNonL0TrivialMove called clock=%d start_level=%d start_level_input_size=%ld output_level=%d [", get_clock(), start_level_, start_level_inputs_.size(), output_level_);
+    // printf("TryExtendNonL0TrivialMove called clock=%d start_level=%d start_level_input_size=%ld output_level=%d [", get_clock(), start_level_, start_level_inputs_.size(), output_level_);
     for(auto &x: start_level_inputs_.files) {
-      printf("%ld ", x->fd.GetNumber());
+      // printf("%ld ", x->fd.GetNumber());
     }
-    printf("] \n");
+    // printf("] \n");
     return start_level_inputs_.size() > 1;
   }
   return false;

@@ -31,7 +31,7 @@ Status CompactionOutputs::Finish(const Status& intput_status,
   int predict_type;
   int rank;
   const int output_level = GetCompaction()->output_level();
-  printf("CompactionOutputs::Finish number=%ld get_clock=%d output_level=%d start_level=%d num_input_level=%ld\n", meta->fnumber, get_clock(), output_level, GetCompaction()->start_level(), GetCompaction()->num_input_levels());
+  // printf("CompactionOutputs::Finish number=%ld get_clock=%d output_level=%d start_level=%d num_input_level=%ld\n", meta->fnumber, get_clock(), output_level, GetCompaction()->start_level(), GetCompaction()->num_input_levels());
   get_predict(output_level, *meta, GetCompaction()->column_family_data()->current(), GetCompaction(), predict, predict_type, rank);
   std::vector<std::string> overlap_list;
   if(output_level + 1 <= 6) {
@@ -39,7 +39,7 @@ Status CompactionOutputs::Finish(const Status& intput_status,
   }
   set_deleted_time(meta->fnumber, predict + get_clock());
 
-  //fs_->SetFileLifetime(get_fname(meta->fd.GetNumber()), predict + get_clock(), get_clock(), 0, (predict < 50) ? 1: output_level, overlap_list);
+  fs_->SetFileLifetime(get_fname(meta->fd.GetNumber()), predict + get_clock(), get_clock(), 0, (predict < 50) ? 1: output_level, overlap_list);
   if(ENABLE_SHORT_WITH_TYPE0 != -1) {
     fs_->SetFileLifetime(get_fname(meta->fd.GetNumber()), predict + get_clock(), get_clock(), 0, (predict < ENABLE_SHORT_WITH_TYPE0) ? 1 : output_level, overlap_list);
   } else {
@@ -58,12 +58,12 @@ Status CompactionOutputs::Finish(const Status& intput_status,
 
   
 
-  std::cout << "Finish:"
-            << meta->fd.GetNumber() 
-            << '[' << meta->smallest.user_key().ToString() <<  ','
-            << meta->largest.user_key().ToString() << ']' 
-            << "lifetime=" << predict
-            << '\n';
+  // std::cout << "Finish:"
+  //           << meta->fd.GetNumber() 
+  //           << '[' << meta->smallest.user_key().ToString() <<  ','
+  //           << meta->largest.user_key().ToString() << ']' 
+  //           << "lifetime=" << predict
+  //           << '\n';
 
   assert(meta != nullptr);
   Status s = intput_status;

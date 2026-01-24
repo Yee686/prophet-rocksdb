@@ -352,8 +352,9 @@ MOCK_LIB_SOURCES =                                              \
   table/mock_table.cc                                           \
 
 BENCH_LIB_SOURCES =                                             \
-  tools/db_bench_tool.cc                                        \
   tools/simulated_hybrid_file_system.cc                         \
+  tools/db_bench_tool_YCSB.cc                                   \
+  # tools/db_bench_tool.cc                                        \
 
 CACHE_BENCH_LIB_SOURCES =					\
   cache/cache_bench_tool.cc                                     \

@@ -5979,13 +5979,13 @@ std::map<int, std::vector<life_meta> > life_profiling;
 //每50次Compact会调用此函数打印状态
 //printf profiling information
 void profiling_print() {
-  printf("Profiling wp1=%lf wp2=%lf  allocated_num=%d reset_num=%d\n", ans_wp_no_set, ans_wp, ans_allocated_num, ans_reset_num);
-  for(int i = 0; i <= FlushLevel; i++) {
-    printf("FlushLevel %d=%d\n", i, flush_level[i]);
-  }
-  for(int i = 0; i <= CompactLevel; i++) {
-    printf("CompactLevel %d=%d ave_lifetime=%d rate=%.2lf level_file_num=%d\n", i, compact_level[i], get_ave_time(i), get_predict_rate(i), level_file_num[i]);
-  }
+  // printf("Profiling wp1=%lf wp2=%lf  allocated_num=%d reset_num=%d\n", ans_wp_no_set, ans_wp, ans_allocated_num, ans_reset_num);
+  // for(int i = 0; i <= FlushLevel; i++) {
+  //   printf("FlushLevel %d=%d\n", i, flush_level[i]);
+  // }
+  // for(int i = 0; i <= CompactLevel; i++) {
+  //   printf("CompactLevel %d=%d ave_lifetime=%d rate=%.2lf level_file_num=%d\n", i, compact_level[i], get_ave_time(i), get_predict_rate(i), level_file_num[i]);
+  // }
 }
 
 void all_profiling_print() {
@@ -6018,7 +6018,7 @@ void log_print(const char *s, LOG_TYPE log_type, int level, Compaction *c) {
     compact_level[level]++;
     time_level.push_back(level);
   }
-  printf("%10s flush_num=%d compaction_num=%d time=%d level=%d\n", s, flush_num, compaction_num, get_clock(), level);
+  // printf("%10s flush_num=%d compaction_num=%d time=%d level=%d\n", s, flush_num, compaction_num, get_clock(), level);
 
 
 
@@ -6027,19 +6027,19 @@ void log_print(const char *s, LOG_TYPE log_type, int level, Compaction *c) {
   if(prev_type != FLUSH && log_type == FLUSH) prev_flush_time = us;  
   prev_type = log_type;
 
-  FILE * fp2 = fopen("clock.out", "a");
-  fprintf(fp2, "%lld %lld %d flush_num=%d compaction_num=%d  time=%d level=%d\n", us - prev_time, us - prev_flush_time, log_type, flush_num, compaction_num, get_clock(), level);
-  fclose(fp2);  
+  // FILE * fp2 = fopen("clock.out", "a");
+  // fprintf(fp2, "%lld %lld %d flush_num=%d compaction_num=%d  time=%d level=%d\n", us - prev_time, us - prev_flush_time, log_type, flush_num, compaction_num, get_clock(), level);
+  // fclose(fp2);  
   prev_time = us;
 
 
   
-  FILE * fp = fopen("level.out", "a");
-  fprintf(fp, "%d %d\n", get_clock(), level);
-  fclose(fp);
-  if(log_type == COMPACTION) {
-     print_compaction(c, level);
-  }
+  // FILE * fp = fopen("level.out", "a");
+  // fprintf(fp, "%d %d\n", get_clock(), level);
+  // fclose(fp);
+  // if(log_type == COMPACTION) {
+  //    print_compaction(c, level);
+  // }
 }
 
 
@@ -6071,18 +6071,18 @@ uint64_t get_number(const FileMetaData tmp) {
 void print_compaction(Compaction *compaction, int level) {
 
   if(compaction == nullptr) return ;
-  printf("level=%d\n", level);
+  // printf("level=%d\n", level);
   update_factor_predict(level);
   for(size_t i = 0; i < compaction->num_input_levels(); i++) {
-    printf("vector[%ld] element:\n", i);
+    // printf("vector[%ld] element:\n", i);
     for(size_t j = 0; j < compaction->num_input_files(i); j++) {
       FileMetaData *tmp = compaction->input(i, j);
       uint64_t number = get_number(*tmp);
-      printf("number=%lu clock=%d ", number, get_clock());
+      // printf("number=%lu clock=%d ", number, get_clock());
 
       if(pre.find(number) != pre.end()) {
         int lifetime = get_clock() - pre[number];
-        printf(" real_time=%d predict_time=%d predict_deleted_time=%d predict_type=%d level_file_num=%d", lifetime, predict[number], deleted_time[number], predict_type[number], level_file_num[level + i]);
+        // printf(" real_time=%d predict_time=%d predict_deleted_time=%d predict_type=%d level_file_num=%d", lifetime, predict[number], deleted_time[number], predict_type[number], level_file_num[level + i]);
         number_life[number] = lifetime;
         number_level[number] = level;
         add_calc(compaction->level() + i, lifetime, predict[number], predict_type[number], i, number, get_clock());
@@ -6204,7 +6204,7 @@ int get_rank(int level, const FileMetaData &file, Version *v, const Compaction* 
       break;
     }
   }
-  printf("GetRankFinished: level=%d number=%ld rank=%d level_size=%ld BEGIN_LEVEL_NUM=%d\n", level, file.fnumber, result, temp.size(), BEGIN_LEVEL_NUM);
+  // printf("GetRankFinished: level=%d number=%ld rank=%d level_size=%ld BEGIN_LEVEL_NUM=%d\n", level, file.fnumber, result, temp.size(), BEGIN_LEVEL_NUM);
   return result / BEGIN_LEVEL_NUM;;
 }
 
@@ -6255,7 +6255,7 @@ void dfs(int level, int deep, const FileMetaData &file, Version *v,  const Compa
       int rank = get_rank(upper_level, *f, v, compaction_);
       tmp_rank = rank;
       int T1 =  CYCLE;
-      printf("Case1 Prediction upper_level=%d number=%ld Case1=%d\n", upper_level, file.fnumber, T1);
+      // printf("Case1 Prediction upper_level=%d number=%ld Case1=%d\n", upper_level, file.fnumber, T1);
       if(T1 < predict_) {
         predict_ = T1;
         predict_type_ = 1;
@@ -6307,7 +6307,7 @@ void set_deleted_time(int fnumber, int clock) {
 }
 
 void get_predict(int level, const FileMetaData &file, Version *v, const Compaction* compaction_, int &predict_, int &predict_type_, int &tmp_rank) { 
-  printf("get_predict begin: number=%ld clock=%d level=%d compact_level_number=%d\n", file.fnumber, get_clock(), level, compact_level[level]);
+  // printf("get_predict begin: number=%ld clock=%d level=%d compact_level_number=%d\n", file.fnumber, get_clock(), level, compact_level[level]);
 
   predict_ = INF;
   predict_type_ = 0;
@@ -6329,7 +6329,7 @@ void get_predict(int level, const FileMetaData &file, Version *v, const Compacti
       if(level + 1 <= CompactLevel && query_is_compacting(level)) {
         T1_rank = get_rank(level, file, v, compaction_);
         T1 = CYCLE * T1_rank; 
-        printf("Case2 number=%ld Predict=%d\n", file.fnumber, T1);
+        // printf("Case2 number=%ld Predict=%d\n", file.fnumber, T1);
         if(T1 < predict_) {
           predict_ = T1;
           predict_type_ = 2; //
@@ -6339,7 +6339,7 @@ void get_predict(int level, const FileMetaData &file, Version *v, const Compacti
       // Case 2A
       T4 = get_recent_average_lifetime(level); ///no way to predict the future compaction;
       if(T4) {
-        printf("Case3 number=%ld Predict=%d\n", file.fnumber, T4);
+        // printf("Case3 number=%ld Predict=%d\n", file.fnumber, T4);
         if(T4 < predict_) {
           predict_ = T4;
           predict_type_ = 3;
@@ -6349,7 +6349,7 @@ void get_predict(int level, const FileMetaData &file, Version *v, const Compacti
 
     //Case 3 trivial move
     if(predict_type_ == 2 && T1 < T4 && level + 1 <= CompactLevel && !has_overlap(file, level + 1, v) && get_recent_average_lifetime(level + 1) != 0) {
-      printf("Case4 trivial move T4=%d T5=%d\n", CYCLE * get_rank(level + 1, file, v, compaction_), get_recent_average_lifetime(level + 1));
+      // printf("Case4 trivial move T4=%d T5=%d\n", CYCLE * get_rank(level + 1, file, v, compaction_), get_recent_average_lifetime(level + 1));
       predict_type_ = 4;
       predict_ = get_recent_average_lifetime(level + 1) + T1;
     }
@@ -6359,7 +6359,7 @@ void get_predict(int level, const FileMetaData &file, Version *v, const Compacti
   uint64_t number = get_number(file);
   rank_[number] = T1_rank;
   predict[number] = predict_;
-  printf("get_predict finish: number=%ld clock=%d level=%d predict_time=%d\n", number, get_clock(), level, predict[number]);
+  // printf("get_predict finish: number=%ld clock=%d level=%d predict_time=%d\n", number, get_clock(), level, predict[number]);
   predict_type[number] = predict_type_;
   if(level == 0) { //Flush的时候获取不到output，只能在这里设置了
     pre[number] = get_clock();
@@ -6371,7 +6371,7 @@ void get_predict(int level, const FileMetaData &file, Version *v, const Compacti
 //we know the output file information at this moment
 void after_flush_or_compaction(VersionStorageInfo *vstorage, int level, std::vector<const CompactionOutputs::Output*> files_output, ColumnFamilyData* cfd, Compaction* const compaction) {
 
-  puts("AllFiles");
+  // puts("AllFiles");
   //这里打log要打所有file的log
   if(vstorage == nullptr) {
     vstorage = cfd->current()->storage_info();
@@ -6379,28 +6379,28 @@ void after_flush_or_compaction(VersionStorageInfo *vstorage, int level, std::vec
   if(vstorage != nullptr) {
     for (int l = 0; l < vstorage->num_levels(); ++l) {
       int level_file_number = vstorage->NumLevelFiles(l);
-      printf("level %d files num:%d: [", l, level_file_number);
+      // printf("level %d files num:%d: [", l, level_file_number);
       std::vector<FileMetaData*> level_file = vstorage->LevelFiles(l);
       for(auto &x: level_file) {
-        printf("%ld ", get_number(*x));
+        // printf("%ld ", get_number(*x));
       }
-      printf("]");
+      // printf("]");
       level_file_num[level + l] = level_file_number; //level
-      puts("");
+      // puts("");
     }
   }
 
-  puts("Input Files");
+  // puts("Input Files");
   if(compaction != nullptr) {
     for (size_t i = 0; i < compaction->num_input_levels(); ++i) {
-        printf("level=%d\n", compaction->level(i));
+        // printf("level=%d\n", compaction->level(i));
         for (auto f : *compaction->inputs(i)) { 
-            printf("number=%ld fname=%s\n", f->fd.GetNumber(), get_fname(f->fd.GetNumber()).c_str());
+            // printf("number=%ld fname=%s\n", f->fd.GetNumber(), get_fname(f->fd.GetNumber()).c_str());
         }
-        puts("");
+        // puts("");
     }
   }
-  puts("Output Files");
+  // puts("Output Files");
 
   if(!files_output.empty()) {  
     for(auto &x: files_output) {
@@ -6412,20 +6412,20 @@ void after_flush_or_compaction(VersionStorageInfo *vstorage, int level, std::vec
       if(rank_.find(number) != rank_.end()) {
         rank = rank_[number];
       }
-      printf("number=%lu level=%d rank=%d clock=%d predict_lifetime=%d predict_type=%d fname=%s\n", 
-            number, compaction->output_level(), rank, get_clock(), predict[number], predict_type[number], y.fname.c_str());  
+      // printf("number=%lu level=%d rank=%d clock=%d predict_lifetime=%d predict_type=%d fname=%s\n", 
+      //       number, compaction->output_level(), rank, get_clock(), predict[number], predict_type[number], y.fname.c_str());  
 
     }
   }
 
-  puts("------End-----------");
+  // puts("------End-----------");
   
 
 }
 DBImpl *rocksdb_impl;
 void SetDBImpl(DBImpl *db) {
-  printf("SetDBImpl called\n");
-  //if(rocksdb_impl == nullptr) 
+  // printf("SetDBImpl called\n");
+  if(rocksdb_impl == nullptr) 
     rocksdb_impl = db;
 }
 
@@ -6446,35 +6446,45 @@ void set_allocated_num(int allocated_num) {
 extern int pre_compaction_num;
 extern int precompaction_file_num;
 int get_bg_compaction_scheduled_() {
+  if(rocksdb_impl == nullptr) {
+    return -1;
+  }
   ColumnFamilyMetaData meta;
   if(rocksdb_impl->DefaultColumnFamily() == nullptr) {
     return -1;
   }
   rocksdb_impl->GetColumnFamilyMetaData(rocksdb_impl->DefaultColumnFamily(), &meta);
-  printf("get_bg_compaction_scheduled_=%d", rocksdb_impl->get_bg_compaction_scheduled_());
-  return rocksdb_impl->get_bg_compaction_scheduled_(); 
+  // printf("get_bg_compaction_scheduled_=%d", rocksdb_impl->get_bg_compaction_scheduled_());
+  return rocksdb_impl->get_bg_compaction_scheduled_();
 }
 bool DoPreCompaction(std::vector<uint64_t> file_list, int ENABLE_LIMIT_LEVEL, int MAX_LIFETIME) {
-  printf("Recieve Compaction Request Time=%d\n", get_clock());
-  printf("file_list.size()=%ld\n", file_list.size());
+  // printf("Recieve Compaction Request Time=%d\n", get_clock());
+  // printf("file_list.size()=%ld\n", file_list.size());
 
-  assert(rocksdb_impl != nullptr);
- 
-  printf("GetName=%s\n", rocksdb_impl->GetName().c_str());
-  if(file_list.size() == 0) return true;
-  ColumnFamilyMetaData meta;
-  if(rocksdb_impl->DefaultColumnFamily() == nullptr) {
+  // 检查 rocksdb_impl 是否为空或正在关闭
+  if(rocksdb_impl == nullptr) {
     return false;
   }
-  rocksdb_impl->GetColumnFamilyMetaData(rocksdb_impl->DefaultColumnFamily(), &meta);
+
+  // printf("GetName=%s\n", rocksdb_impl->GetName().c_str());
+  if(file_list.size() == 0) return true;
+
+  // 通过检查 default_cf_handle_ 是否为空来判断数据库是否准备好
+  ColumnFamilyHandle* cf = rocksdb_impl->DefaultColumnFamily();
+  if(cf == nullptr) {
+    return false;
+  }
+
+  ColumnFamilyMetaData meta;
+  rocksdb_impl->GetColumnFamilyMetaData(cf, &meta);
   std::vector<std::string> input_file_names;
   std::vector<int> output_level_list;
   int output_level = -1, count = 0;
   //TODO: optimize
 
-  printf("Begining FileList: ");
-  for(auto &x: file_list) printf("%ld ", x);
-  puts("");
+  // printf("Begining FileList: ");
+  // for(auto &x: file_list) printf("%ld ", x);
+  // puts("");
   if(ENABLE_LIMIT_LEVEL) {
     std::vector<uint64_t> tobe_compacted_list;
     for(auto &id: file_list) {
@@ -6491,8 +6501,8 @@ bool DoPreCompaction(std::vector<uint64_t> file_list, int ENABLE_LIMIT_LEVEL, in
         }
         if(flag == 1) break;
       }
-      if(flag == 1)
-        printf("file id=%ld deletion_time=%d level=%d\n", id, pre[id] + predict[id], l);
+      // if(flag == 1)
+      //   printf("file id=%ld deletion_time=%d level=%d\n", id, pre[id] + predict[id], l);
       if(flag == 1 && l <= ENABLE_LIMIT_LEVEL && pre[id] + predict[id] <= get_clock() && predict_type[id] == 2 && pre[id] + predict[id] <= MAX_LIFETIME) 
         tobe_compacted_list.emplace_back(id);
     }
@@ -6500,25 +6510,25 @@ bool DoPreCompaction(std::vector<uint64_t> file_list, int ENABLE_LIMIT_LEVEL, in
     file_list.insert(file_list.begin(), tobe_compacted_list.begin(), tobe_compacted_list.end());
   }
 
-  printf("After FileList: ");
+  // printf("After FileList: ");
   for(auto &x: file_list) printf("%ld ", x);
-  puts("");
+  // puts("");
 
   if(file_list.empty()) {
-    printf("FileList is empty\n");
+    // printf("FileList is empty\n");
     return false;
   }
 
 
 
-  puts("Rocksdb File:");
+  // puts("Rocksdb File:");  
   for(auto &x: meta.levels) {
     int level = x.level;
-    printf("level=%d: size=%ld ", level, x.files.size());
+    // printf("level=%d: size=%ld ", level, x.files.size());
     for(auto &file: x.files) {
-      printf("%ld ", file.file_number);
+      // printf("%ld ", file.file_number);
     }
-    puts("");
+    // puts("");
   }  
 
 
@@ -6583,16 +6593,16 @@ bool DoPreCompaction(std::vector<uint64_t> file_list, int ENABLE_LIMIT_LEVEL, in
 
 
   
-  puts("After PreCompaction");
+  // puts("After PreCompaction");
   ColumnFamilyMetaData new_meta;
   rocksdb_impl->GetColumnFamilyMetaData(rocksdb_impl->DefaultColumnFamily(), &new_meta);
   for(auto &x: new_meta.levels) {
     int level = x.level;
-    printf("level=%d: ", level);
-    for(auto &file: x.files) {
-      printf("%ld ", file.file_number);
-    }
-    puts("");
+    // printf("level=%d: ", level);
+    // for(auto &file: x.files) {
+    //   printf("%ld ", file.file_number);
+    // }
+    // puts(""); 
   }  
   return true;
 }
