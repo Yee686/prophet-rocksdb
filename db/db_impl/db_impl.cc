@@ -754,11 +754,16 @@ Status DBImpl::CloseHelper() {
 
 Status DBImpl::CloseImpl() { return CloseHelper(); }
 
+extern DBImpl *rocksdb_impl;
+
 DBImpl::~DBImpl() {
   printf("DB Impl Destory Function Called\n");
   profiling_print();
   all_profiling_print();
 
+  if (rocksdb_impl == this) {
+    rocksdb_impl = nullptr;
+  }
 
   // TODO: remove this.
   init_logger_creation_s_.PermitUncheckedError();
@@ -6425,8 +6430,7 @@ void after_flush_or_compaction(VersionStorageInfo *vstorage, int level, std::vec
 DBImpl *rocksdb_impl;
 void SetDBImpl(DBImpl *db) {
   // printf("SetDBImpl called\n");
-  if(rocksdb_impl == nullptr) 
-    rocksdb_impl = db;
+  rocksdb_impl = db;
 }
 
 void set_write_amplification(double wp) {
