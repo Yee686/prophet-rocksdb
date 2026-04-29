@@ -467,7 +467,7 @@ Status StatisticsImpl::Reset() {
 namespace {
 
 // a buffer size used for temp string buffers
-const int kTmpStrBufferSize = 200;
+const int kTmpStrBufferSize = 1000;
 
 } // namespace
 
